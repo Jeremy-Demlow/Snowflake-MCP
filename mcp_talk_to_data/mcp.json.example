@@ -1,25 +1,26 @@
 {
   "mcpServers": {
     "snowflake-financial-services": {
-      "url": "https://<YOUR-ORG-ACCOUNT>.snowflakecomputing.com/api/v2/databases/snowflake_mcp_db/schemas/data/mcp-servers/financial_services_mcp",
+      "url": "https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
       "headers": {
         "Authorization": "Bearer <YOUR-PAT-TOKEN>"
       },
       "metadata": {
-        "description": "Snowflake MCP Server for Financial Services Data",
-        "database": "snowflake_mcp_db",
-        "schema": "data",
+        "description": "Snowflake MCP Server for Financial Services Data - 5 Cortex Search Services",
+        "database": "MCP",
+        "mcp_server_schema": "MCP_SERVERS",
+        "data_schema": "data",
         "server_name": "financial_services_mcp",
         "tools": [
-          "financial_analyst - Natural language SQL queries",
-          "support_tickets_search - Support ticket semantic search",
-          "customer_search - Customer data search",
-          "campaigns_search - Marketing campaign search",
-          "transactions_search - Transaction search and fraud detection",
-          "risk_assessments_search - Risk assessment search"
+          "support_tickets_search - Search 50K support tickets",
+          "customer_search - Search 5K customers",
+          "campaigns_search - Search 500 marketing campaigns",
+          "transactions_search - Search 50K transactions",
+          "risk_assessments_search - Search 10K risk assessments"
         ]
       }
     }
   }
 }
+
 

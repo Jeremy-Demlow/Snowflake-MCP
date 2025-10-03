@@ -1,458 +1,339 @@
-# Snowflake MCP Server for Financial Services
+# Snowflake MCP Servers for Cursor
 
-A comprehensive, production-ready Model Context Protocol (MCP) server implementation for Snowflake, designed to expose financial services data to AI agents through standardized interfaces.
+Two production-ready Model Context Protocol (MCP) servers for Snowflake, designed to give Cursor AI assistant access to Snowflake documentation and financial services data.
 
-## 🎯 Overview
+## 🎯 What's Included
 
-This MCP server provides AI coding assistants like Cursor, Claude, CrewAI, and other MCP-compatible tools with direct access to governed Snowflake data through:
+### 1. **Snowflake Documentation MCP** (`mcp_documentation/`)
+Access Snowflake's official documentation from within Cursor for accurate SQL syntax and function references.
 
-- **6 AI-Powered Tools** (1 Cortex Analyst + 5 Cortex Search Services)
-- **Full Role-Based Access Control (RBAC)**
-- **Semantic search across 5 data domains**
-- **Natural language SQL generation**
-- **Production-ready governance and security**
+### 2. **Financial Services MCP** (`mcp_talk_to_data/`)
+Semantic search across 250K+ records of financial services data including customers, transactions, campaigns, support tickets, and risk assessments.
+
+---
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    AI Agent (Cursor/Claude)                  │
+│                    Cursor AI Assistant                       │
 └───────────────────────────┬─────────────────────────────────┘
-                            │ MCP Protocol (HTTP/JSON-RPC)
+                            │ MCP Protocol (HTTPS/JSON-RPC)
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
-│              Snowflake-Managed MCP Server                    │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  Tools (discoverable via /tools/list endpoint)       │   │
-│  │  ├─ financial_analyst (Cortex Analyst)              │   │
-│  │  ├─ support_tickets_search (Cortex Search)          │   │
-│  │  ├─ customer_search (Cortex Search)                 │   │
-│  │  ├─ campaigns_search (Cortex Search)                │   │
-│  │  ├─ transactions_search (Cortex Search)             │   │
-│  │  └─ risk_assessments_search (Cortex Search)         │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────────┬─────────────────────────────────┘
-                            │ Snowflake API
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    Snowflake Data Cloud                      │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │  Data Layer (governed, secured)                      │   │
-│  │  ├─ dim_customers                                    │   │
-│  │  ├─ dim_campaigns                                    │   │
-│  │  ├─ fact_transactions                                │   │
-│  │  ├─ fact_support_tickets                             │   │
-│  │  ├─ fact_risk_assessments                            │   │
-│  │  └─ fact_marketing_responses                         │   │
-│  └──────────────────────────────────────────────────────┘   │
+│           Snowflake Account (trb65519)                       │
+│                                                              │
+│  MCP Database (Centralized)                                  │
+│  ├── MCP_SERVERS/ (schema)                                   │
+│  │   ├── SNOWFLAKE_DOCS (1 tool)                            │
+│  │   └── FINANCIAL_SERVICES_MCP (5 tools)                   │
+│  │                                                           │
+│  └── data/ (schema)                                          │
+│      ├── Tables (6 tables, 251K records)                     │
+│      └── Cortex Search Services (5 services)                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 📚 Data Domains
+**Key Design Decision**: Everything centralized in the `MCP` database for easy management and cleanup.
 
-### 1. **Customers** (`dim_customers`)
-- Demographics, segments, and financial profiles
-- 10,000+ customer records
-- Fields: customer_id, name, email, segment, credit_score, lifetime_value, risk_profile
-
-### 2. **Transactions** (`fact_transactions`)
-- Transaction history with fraud detection
-- 100,000+ transaction records
-- Fields: transaction_id, amount, merchant, category, fraud_score, is_flagged
-
-### 3. **Support Tickets** (`fact_support_tickets`)
-- Customer support interactions
-- Fields: ticket_id, category, status, satisfaction_score, resolution_time
-
-### 4. **Marketing Campaigns** (`dim_campaigns`)
-- Campaign performance and ROI
-- Fields: campaign_id, name, budget, revenue_generated, roi, conversions
-
-### 5. **Risk Assessments** (`fact_risk_assessments`)
-- Credit, fraud, and AML risk scoring
-- Fields: assessment_id, credit_risk_score, fraud_risk_score, aml_risk_score
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+1. Snowflake account with ACCOUNTADMIN role
+2. Snowflake CLI installed (`brew install snowflake-cli`)
+3. Cursor IDE
+4. Snowflake Documentation Cortex Knowledge Extension (from Marketplace)
 
-1. **Snowflake Account** with:
-   - `ACCOUNTADMIN` role (for setup)
-   - Network policy configured (required for PATs)
-   - Cortex features enabled
+### Setup (15 minutes total)
 
-2. **Cursor IDE** or another MCP-compatible client
-
-3. **SnowSQL** or Snowsight access
-
-### Installation Steps
-
-#### Step 1: Setup Database and Load Data
+#### Option 1: Documentation MCP (5 minutes)
 ```bash
-# Run in Snowflake (Snowsight or SnowSQL)
-snowsql -f setup.sql
+cd mcp_documentation
+snow sql -c <your-connection> -f setup_snowflake_docs_mcp.sql
 ```
 
-This creates:
-- Database: `dash_mcp_db`
-- Schema: `data`
-- Warehouse: `dash_wh_s`
-- All dimension and fact tables with sample data
+Then generate PAT token in Snowsight and configure Cursor.
 
-#### Step 2: Create Cortex Search Services
+#### Option 2: Financial Services MCP (15 minutes)
 ```bash
-snowsql -f 01_create_cortex_search.sql
+cd mcp_talk_to_data
+snow sql -c <your-connection> -f 00_setup.sql
+snow sql -c <your-connection> -f 01_create_cortex_search.sql
+snow sql -c <your-connection> -q "PUT file://02_create_semantic_model.yaml @MCP.data.semantic_models AUTO_COMPRESS=FALSE OVERWRITE=TRUE;"
+snow sql -c <your-connection> -f 04_create_mcp_server_search_only.sql
 ```
 
-Creates 5 Cortex Search services for semantic search:
-- `support_tickets_search`
-- `customer_search`
-- `campaigns_search`
-- `transactions_search`
-- `risk_assessments_search`
+Then generate PAT token and configure Cursor.
 
-#### Step 3: Upload Semantic Model and Create Cortex Analyst
+---
 
-First, upload the semantic model file:
+## 📊 What You Get
 
-**Option A: Using SnowSQL**
-```bash
-snowsql -a <your-account> -u <username>
-PUT file://02_create_semantic_model.yaml @dash_mcp_db.data.semantic_models AUTO_COMPRESS=FALSE OVERWRITE=TRUE;
+### Snowflake Documentation MCP
+- **1 Tool**: `snowflake-docs`
+- **Purpose**: Search Snowflake documentation for accurate syntax
+- **Use Case**: Write correct Snowflake code on the first try
+
+### Financial Services MCP
+- **5 Tools**:
+  1. `support_tickets_search` - 50,000 support tickets
+  2. `customer_search` - 5,000 customers
+  3. `campaigns_search` - 500 marketing campaigns
+  4. `transactions_search` - 50,000 transactions
+  5. `risk_assessments_search` - 10,000 risk assessments
+
+---
+
+## 🔐 Security Model
+
+**Two Dedicated Roles**:
+- `SNOWFLAKE_DOCS_ROLE` - Read-only access to documentation
+- `mcp_user_role` - Read-only access to financial data
+
+**PAT Token**: One token works for both servers with role restrictions for security.
+
+**Network Policy**: Required for PAT tokens (Snowflake security best practice)
+
+---
+
+## 💡 Real-World Examples
+
+### With Documentation MCP:
+```
+You: "Create a stored procedure with EXECUTE IMMEDIATE"
+Cursor: *searches docs* → generates correct Snowflake Scripting syntax
 ```
 
-**Option B: Using Snowsight UI**
-1. Navigate to: Data > Databases > `dash_mcp_db` > `data` > Stages
-2. Click on `semantic_models` stage
-3. Click "+ Files" and upload `02_create_semantic_model.yaml`
-
-Then create the Cortex Analyst:
-```bash
-snowsql -f 03_create_cortex_analyst.sql
+### With Financial Services MCP:
+```
+You: "Find customers in California with credit scores above 750"
+Cursor: *uses customer_search* → returns filtered results with details
 ```
 
-#### Step 4: Create MCP Server
-```bash
-snowsql -f 04_create_mcp_server.sql
+```
+You: "Show me high ROI marketing campaigns"  
+Cursor: *uses campaigns_search* → finds campaigns with 300%+ ROI
 ```
 
-**Important**: This script will guide you to:
-1. Create the MCP server with all 6 tools
-2. Set up `mcp_user_role` with appropriate permissions
-3. Generate a Programmatic Access Token (PAT)
-
-**Generate PAT Token:**
-```sql
-ALTER USER <YOUR_USERNAME> ADD PROGRAMMATIC ACCESS TOKEN cursor_mcp_token
-    ROLE_RESTRICTION = 'mcp_user_role'
-    DAYS_TO_EXPIRY = 90;
+```
+You: "Find suspicious transactions"
+Cursor: *uses transactions_search* → identifies flagged transactions
 ```
 
-⚠️ **SAVE THE TOKEN** - you cannot retrieve it again!
+---
 
-#### Step 5: Configure Cursor
+## 🔧 Configuration
 
-1. Open Cursor Settings: `Cursor > Settings > Cursor Settings > Tools & MCP`
-2. Click "Add Custom MCP"
-3. Edit the `mcp.json` file:
+### Cursor Setup
+
+**Location**: `~/Library/Application Support/Cursor/User/globalStorage/mcp.json`
 
 ```json
 {
   "mcpServers": {
-    "snowflake-financial-services": {
-      "url": "https://YOUR-ORG-ACCOUNT.snowflakecomputing.com/api/v2/databases/dash_mcp_db/schemas/data/mcp-servers/financial_services_mcp_server",
+    "snowflake-docs": {
+      "url": "https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/SNOWFLAKE_DOCS",
       "headers": {
-        "Authorization": "Bearer YOUR-PAT-TOKEN"
+        "Authorization": "Bearer <YOUR-PAT-TOKEN>"
+      }
+    },
+    "snowflake-financial-services": {
+      "url": "https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR-PAT-TOKEN>"
       }
     }
   }
 }
 ```
 
-Replace:
-- `YOUR-ORG-ACCOUNT` with your Snowflake account identifier (e.g., `abc12345.us-east-1`)
-- `YOUR-PAT-TOKEN` with the token from Step 4
+**After configuring**:
+1. Reload Cursor: `⌘⇧P` → "Reload Window"
+2. Settings → Tools & MCP → Enable the tools
 
-4. Save the file
-5. Hover over "snowflake-financial-services" in the MCP tools list
-6. Click to enable the tools
+---
 
-#### Step 6: Verify Connection
+## 📁 Repository Structure
 
-Test the connection with curl:
-```bash
-curl -X POST "https://YOUR-ORG-ACCOUNT.snowflakecomputing.com/api/v2/databases/dash_mcp_db/schemas/data/mcp-servers/financial_services_mcp_server" \
-  --header 'Content-Type: application/json' \
-  --header 'Accept: application/json' \
-  --header "Authorization: Bearer YOUR-PAT-TOKEN" \
-  --data '{
-    "jsonrpc": "2.0",
-    "id": 12345,
-    "method": "tools/list",
-    "params": {}
-  }'
+```
+Snowflake-MCP/
+├── README.md                        # This file
+├── SETUP_COMPLETE.md               # Setup completion summary
+│
+├── mcp_documentation/              # Snowflake Docs MCP
+│   ├── README.md                   # Docs MCP guide
+│   ├── setup_snowflake_docs_mcp.sql # Setup script
+│   ├── mcp.json                    # Config with token
+│   └── test_mcp_connection.sh      # Test script
+│
+└── mcp_talk_to_data/               # Financial Services MCP
+    ├── README.md                   # Financial MCP guide
+    ├── 00_setup.sql                # Database & data loading
+    ├── 01_create_cortex_search.sql # Create 5 search services
+    ├── 02_create_semantic_model.yaml # Semantic model (uploaded)
+    ├── 04_create_mcp_server_search_only.sql # MCP server creation
+    ├── mcp.json                    # Config with token
+    └── test_financial_mcp.sh       # Test script
 ```
 
-Expected response:
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 12345,
-  "result": {
-    "tools": [
-      {
-        "name": "financial_analyst",
-        "description": "Ask natural language questions...",
-        ...
-      },
-      ...
-    ]
-  }
-}
-```
+---
 
-## 💡 Usage Examples
+## 🛠️ Monitoring & Maintenance
 
-### Example 1: Ask Natural Language Questions
-```
-User: "What is the average customer lifetime value by segment?"
-
-Cursor will use the financial_analyst tool to:
-1. Understand the question
-2. Generate SQL using the semantic model
-3. Execute the query
-4. Return formatted results
-```
-
-### Example 2: Search Support Tickets
-```
-User: "Find all support tickets related to account balance issues"
-
-Cursor will use the support_tickets_search tool to:
-1. Perform semantic search on ticket descriptions
-2. Return relevant tickets with context
-3. Summarize patterns and sentiment
-```
-
-### Example 3: Analyze Campaign Performance
-```
-User: "Show me the top 5 marketing campaigns by ROI"
-
-Cursor will use the campaigns_search tool to:
-1. Search campaign data
-2. Rank by ROI
-3. Present results with insights
-```
-
-### Example 4: Fraud Detection
-```
-User: "Find suspicious transactions in the last 30 days"
-
-Cursor will use the transactions_search tool to:
-1. Search for flagged transactions
-2. Filter by date range
-3. Analyze patterns and risk scores
-```
-
-### Example 5: Risk Assessment
-```
-User: "How many high-risk customers require manual review?"
-
-Cursor will use the risk_assessments_search tool to:
-1. Filter by risk rating
-2. Count review-required cases
-3. Provide risk score distributions
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-- `SNOWFLAKE_ACCOUNT`: Your Snowflake account identifier
-- `SNOWFLAKE_PAT_TOKEN`: Programmatic Access Token
-
-### Role Permissions
-The `mcp_user_role` has:
-- ✅ READ access to all tables
-- ✅ USAGE on Cortex Search services
-- ✅ USAGE on Cortex Analyst
-- ✅ USAGE on MCP server
-- ❌ NO WRITE access (read-only for safety)
-
-### Security Best Practices
-1. **Use PATs with role restrictions** - limit scope to `mcp_user_role`
-2. **Set token expiration** - recommended 90 days or less
-3. **Network policies** - restrict IP ranges if possible
-4. **Audit regularly** - monitor MCP server usage
-5. **Rotate tokens** - establish a rotation schedule
-
-## 📊 Monitoring & Maintenance
-
-### Check MCP Server Status
+### Check Status
 ```sql
+USE DATABASE MCP;
 SHOW MCP SERVERS;
-DESCRIBE MCP SERVER dash_mcp_db.data.financial_services_mcp_server;
+SHOW CORTEX SEARCH SERVICES IN SCHEMA data;
 ```
 
 ### View Tool Usage
 ```sql
--- Query Snowflake query history for MCP activity
 SELECT *
 FROM TABLE(INFORMATION_SCHEMA.QUERY_HISTORY())
 WHERE QUERY_TEXT LIKE '%cortex%'
-  AND USER_NAME = 'YOUR_MCP_USER'
 ORDER BY START_TIME DESC
 LIMIT 100;
 ```
 
-### Refresh Cortex Search Services
+### Refresh Search Services
 ```sql
--- Cortex Search services auto-refresh based on TARGET_LAG
--- Manual refresh (if needed):
-ALTER CORTEX SEARCH SERVICE support_tickets_search REFRESH;
+ALTER CORTEX SEARCH SERVICE MCP.data.support_tickets_search REFRESH;
 ```
-
-### Update Semantic Model
-```sql
--- Upload new version of YAML file
-PUT file://02_create_semantic_model.yaml @semantic_models AUTO_COMPRESS=FALSE OVERWRITE=TRUE;
-
--- Recreate Cortex Analyst
-CREATE OR REPLACE CORTEX ANALYST SERVICE financial_analyst
-    SEMANTIC_MODEL_FILE = '@semantic_models/02_create_semantic_model.yaml';
-```
-
-## 🎓 Jeremy Howard-Style Learning Path
-
-### Phase 1: Understanding the Basics
-1. Read the [MCP specification](https://modelcontextprotocol.io/)
-2. Review Snowflake's [Cortex Search documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-search)
-3. Understand [Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
-
-### Phase 2: Hands-On Implementation
-1. Run the setup scripts in order (setup.sql → 04_create_mcp_server.sql)
-2. Test each Cortex Search service individually
-3. Ask simple questions to Cortex Analyst
-4. Configure Cursor and test the MCP connection
-
-### Phase 3: Customization
-1. Add your own tables to the semantic model
-2. Create additional Cortex Search services
-3. Customize tool descriptions for your use case
-4. Add more complex verified queries
-
-### Phase 4: Scale & Production
-1. Set up multiple MCP servers for different teams/roles
-2. Implement comprehensive monitoring
-3. Create custom dashboards for usage analytics
-4. Establish governance policies
-
-## 🛠️ Troubleshooting
-
-### Issue: "Loading tools..." never completes in Cursor
-
-**Solution 1**: Test connection with curl (see Step 6)
-- If curl fails, check PAT token and account URL
-- Verify network policy allows your IP
-
-**Solution 2**: Check role permissions
-```sql
-SHOW GRANTS TO ROLE mcp_user_role;
-```
-
-**Solution 3**: Verify MCP server exists
-```sql
-SHOW MCP SERVERS;
-```
-
-### Issue: Cortex Search returns no results
-
-**Solution 1**: Check if data exists
-```sql
-SELECT COUNT(*) FROM fact_support_tickets;
-```
-
-**Solution 2**: Test search service directly
-```sql
-SELECT * FROM TABLE(
-    support_tickets_search(
-        QUERY => 'test query',
-        MAX_RESULTS => 5
-    )
-);
-```
-
-**Solution 3**: Refresh the search service
-```sql
-ALTER CORTEX SEARCH SERVICE support_tickets_search REFRESH;
-```
-
-### Issue: PAT token expired
-
-**Solution**: Generate a new token
-```sql
-ALTER USER <YOUR_USERNAME> ADD PROGRAMMATIC ACCESS TOKEN cursor_mcp_token_2
-    ROLE_RESTRICTION = 'mcp_user_role'
-    DAYS_TO_EXPIRY = 90;
-```
-Update `mcp.json` with the new token.
-
-### Issue: Semantic model errors
-
-**Solution 1**: Validate YAML syntax
-- Use a YAML validator online
-- Check indentation (use spaces, not tabs)
-
-**Solution 2**: Verify file upload
-```sql
-LIST @semantic_models;
-```
-
-**Solution 3**: Check semantic model format
-- Ensure all required fields are present
-- Verify table and column names match your schema
-
-## 📁 File Structure
-
-```
-Snowflake-MCP/
-├── README.md                          # This file
-├── setup.sql                          # Initial database setup
-├── 01_create_cortex_search.sql        # Cortex Search services
-├── 02_create_semantic_model.yaml      # Semantic model for Analyst
-├── 03_create_cortex_analyst.sql       # Cortex Analyst setup
-├── 04_create_mcp_server.sql          # MCP server creation
-├── mcp.json.example                   # Cursor configuration template
-├── MCP_SETUP_GUIDE.md                # Detailed setup instructions
-└── END_TO_END_PROMPT.md              # AI assistant prompt
-```
-
-## 🤝 Contributing
-
-This is a template project designed to be customized for your specific use case. Feel free to:
-
-1. **Fork and modify** for your data model
-2. **Add new Cortex Search services** for additional tables
-3. **Extend the semantic model** with more relationships
-4. **Create domain-specific MCP servers** for different teams
-
-## 📄 License
-
-This project is provided as-is for educational and commercial use.
-
-## 🙏 Acknowledgments
-
-- Built following Jeremy Howard's principles of education and clarity
-- Based on Snowflake's MCP server documentation
-- Inspired by the Model Context Protocol community
-
-## 📞 Support
-
-For issues specific to:
-- **Snowflake**: Contact Snowflake Support or check [docs.snowflake.com](https://docs.snowflake.com)
-- **MCP Protocol**: See [modelcontextprotocol.io](https://modelcontextprotocol.io/)
-- **Cursor**: Visit [cursor.sh](https://cursor.sh/)
 
 ---
 
-Built with ❄️ by the Snowflake community
+## 🧹 Cleanup
 
+Everything is centralized in one database for easy cleanup:
+
+```sql
+-- Remove everything (be careful!)
+DROP DATABASE MCP CASCADE;
+```
+
+Or remove individual components:
+```sql
+-- Remove just the financial MCP server
+DROP MCP SERVER MCP.MCP_SERVERS.financial_services_mcp;
+
+-- Remove just the data
+DROP SCHEMA MCP.data CASCADE;
+```
+
+---
+
+## 📊 Data Summary
+
+| Table | Records | Description |
+|-------|---------|-------------|
+| dim_customers | 5,000 | Customer demographics & segments |
+| dim_campaigns | 500 | Marketing campaign performance |
+| fact_marketing_responses | 136,369 | Campaign responses |
+| fact_risk_assessments | 10,000 | Credit/fraud/AML risk scores |
+| fact_transactions | 50,000 | Transaction history & fraud flags |
+| fact_support_tickets | 50,000 | Customer support interactions |
+| **Total** | **251,869** | |
+
+---
+
+## 🎓 Learning Path
+
+### Phase 1: Get Started (15 min)
+1. Set up Documentation MCP for better Snowflake coding
+2. Test it with a simple stored procedure prompt
+
+### Phase 2: Add Financial Data (15 min)
+1. Load the financial services data
+2. Create the search services
+3. Test semantic searches
+
+### Phase 3: Explore & Customize
+1. Try different search queries
+2. Add your own tables to the semantic model
+3. Create custom Cortex Search services
+
+### Phase 4: Production
+1. Set up additional MCP servers for different use cases
+2. Implement monitoring dashboards
+3. Establish governance policies
+
+---
+
+## 🛠️ Troubleshooting
+
+### Tools not showing in Cursor
+- **Solution**: Reload Cursor window (`⌘⇧P` → "Reload Window")
+- **Check**: Settings → Tools & MCP to enable tools
+
+### PAT Token Expired
+```sql
+-- Generate new token in Snowsight
+ALTER USER jd_service_account_admin 
+ADD PROGRAMMATIC ACCESS TOKEN cursor_mcp_token_2
+    ROLE_RESTRICTION = 'mcp_user_role'
+    DAYS_TO_EXPIRY = 90;
+```
+
+### Search Returns No Results
+```sql
+-- Check data exists
+SELECT COUNT(*) FROM MCP.data.fact_support_tickets;
+
+-- Refresh the search service
+ALTER CORTEX SEARCH SERVICE MCP.data.support_tickets_search REFRESH;
+```
+
+### Connection Test
+```bash
+# Test Documentation MCP
+cd mcp_documentation
+./test_mcp_connection.sh <YOUR-PAT-TOKEN>
+
+# Test Financial Services MCP
+cd mcp_talk_to_data
+./test_financial_mcp.sh <YOUR-PAT-TOKEN>
+```
+
+---
+
+## 📝 Notes
+
+### About Cortex Analyst
+- **Status**: Feature announced Oct 2, 2025 (very new!)
+- **Current**: Not yet available as MCP tool type
+- **Ready**: Semantic model uploaded and configured
+- **Future**: Will add as 6th tool when available
+
+### Database Naming
+- Originally planned: `snowflake_mcp_db` or `dash_mcp_db`
+- **Actually built**: `MCP` (cleaner, centralized)
+- All servers and data in one place
+
+---
+
+## 🤝 Contributing
+
+This is a working example you can customize:
+- Add your own data tables
+- Create domain-specific search services
+- Set up multiple MCP servers for different teams
+- Extend the semantic model
+
+---
+
+## 📞 Support
+
+- **Snowflake Issues**: [docs.snowflake.com](https://docs.snowflake.com)
+- **MCP Protocol**: [modelcontextprotocol.io](https://modelcontextprotocol.io/)
+- **Cursor**: [cursor.sh](https://cursor.sh/)
+
+---
+
+**Account**: trb65519 (AWS US-WEST-2)  
+**Built**: October 3, 2025  
+**Status**: ✅ Production Ready
+
+Built with ❄️ by the Snowflake community
