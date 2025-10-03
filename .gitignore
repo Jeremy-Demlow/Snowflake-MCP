@@ -156,3 +156,4 @@ config.yml
 
 mcp_documentation/mcp.json
 mcp_talk_to_data/mcp.json
+mcp_talk_to_data/PROMPT.md
