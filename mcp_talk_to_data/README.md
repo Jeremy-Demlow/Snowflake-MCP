@@ -89,7 +89,7 @@ Add to Cursor's `mcp.json`:
 {
   "mcpServers": {
     "snowflake-financial-services": {
-      "url": "https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
+      "url": "https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
       "headers": {
         "Authorization": "Bearer <YOUR-PAT-TOKEN>"
       }
@@ -137,7 +137,7 @@ Show customers that require manual risk review
 
 **Full URL**:
 ```
-https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp
+https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp
 ```
 
 **Database**: `MCP`  
@@ -241,5 +241,5 @@ Cortex Analyst isn't working in MCP yet, so we have:
 ---
 
 **Built**: October 3, 2025  
-**Account**: trb65519.snowflakecomputing.com  
+**Account**: <ACCOUNT_NAME>.snowflakecomputing.com  
 **Total Tools**: 6 (1 docs + 5 financial)

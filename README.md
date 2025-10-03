@@ -21,7 +21,7 @@ Semantic search across 250K+ records of financial services data including custom
                             │ MCP Protocol (HTTPS/JSON-RPC)
                             ↓
 ┌─────────────────────────────────────────────────────────────┐
-│           Snowflake Account (trb65519)                       │
+│           Snowflake Account (<ACCOUNT_NAME>)                       │
 │                                                              │
 │  MCP Database (Centralized)                                  │
 │  ├── MCP_SERVERS/ (schema)                                   │
@@ -134,13 +134,13 @@ Cursor: *uses transactions_search* → identifies flagged transactions
 {
   "mcpServers": {
     "snowflake-docs": {
-      "url": "https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/SNOWFLAKE_DOCS",
+      "url": "https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/SNOWFLAKE_DOCS",
       "headers": {
         "Authorization": "Bearer <YOUR-PAT-TOKEN>"
       }
     },
     "snowflake-financial-services": {
-      "url": "https://trb65519.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
+      "url": "https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/financial_services_mcp",
       "headers": {
         "Authorization": "Bearer <YOUR-PAT-TOKEN>"
       }
