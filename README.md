@@ -271,7 +271,7 @@ DROP SCHEMA MCP.data CASCADE;
 ### PAT Token Expired
 ```sql
 -- Generate new token in Snowsight
-ALTER USER jd_service_account_admin 
+ALTER USER <USER_NAME> 
 ADD PROGRAMMATIC ACCESS TOKEN cursor_mcp_token_2
     ROLE_RESTRICTION = 'mcp_user_role'
     DAYS_TO_EXPIRY = 90;

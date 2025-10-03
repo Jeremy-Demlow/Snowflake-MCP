@@ -66,7 +66,7 @@ snow sql -c myconnection -f 04_create_mcp_server_search_only.sql
 ```sql
 USE ROLE ACCOUNTADMIN;
 
-ALTER USER jd_service_account_admin 
+ALTER USER <USER_NAME> 
 ADD PROGRAMMATIC ACCESS TOKEN cursor_financial_mcp
     ROLE_RESTRICTION = 'mcp_user_role'
     DAYS_TO_EXPIRY = 90;

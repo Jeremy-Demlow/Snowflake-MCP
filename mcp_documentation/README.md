@@ -32,7 +32,7 @@ You need to generate a PAT token using Snowsight UI (cannot use PAT to create PA
 
 1. **Go to Snowsight**: https://app.snowflake.com/
 2. **Navigate to**: Admin → Users & Roles → Users
-3. **Find user**: `jd_service_account_admin`
+3. **Find user**: `<USER_NAME>`
 4. **Click** the user, then go to "Programmatic Access Tokens"
 5. **Click "Add Token"** and use these settings:
    ```
@@ -44,7 +44,7 @@ You need to generate a PAT token using Snowsight UI (cannot use PAT to create PA
 
 **Alternative: Use SQL in Snowsight (not CLI):**
 ```sql
-ALTER USER jd_service_account_admin 
+ALTER USER <USER_NAME> 
 ADD PROGRAMMATIC ACCESS TOKEN cursor_docs_token
     ROLE_RESTRICTION = 'SNOWFLAKE_DOCS_ROLE'
     DAYS_TO_EXPIRY = 90;
@@ -162,7 +162,7 @@ Once configured, test with these prompts:
 
 **Solution**: Generate new token in Snowsight:
 ```sql
-ALTER USER jd_service_account_admin 
+ALTER USER <USER_NAME> 
 ADD PROGRAMMATIC ACCESS TOKEN cursor_docs_token_2
     ROLE_RESTRICTION = 'SNOWFLAKE_DOCS_ROLE'
     DAYS_TO_EXPIRY = 90;
