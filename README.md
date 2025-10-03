@@ -299,21 +299,6 @@ cd mcp_talk_to_data
 
 ---
 
-## 📝 Notes
-
-### About Cortex Analyst
-- **Status**: Feature announced Oct 2, 2025 (very new!)
-- **Current**: Not yet available as MCP tool type
-- **Ready**: Semantic model uploaded and configured
-- **Future**: Will add as 6th tool when available
-
-### Database Naming
-- Originally planned: `snowflake_mcp_db` or `dash_mcp_db`
-- **Actually built**: `MCP` (cleaner, centralized)
-- All servers and data in one place
-
----
-
 ## 🤝 Contributing
 
 This is a working example you can customize:
@@ -322,18 +307,3 @@ This is a working example you can customize:
 - Set up multiple MCP servers for different teams
 - Extend the semantic model
 
----
-
-## 📞 Support
-
-- **Snowflake Issues**: [docs.snowflake.com](https://docs.snowflake.com)
-- **MCP Protocol**: [modelcontextprotocol.io](https://modelcontextprotocol.io/)
-- **Cursor**: [cursor.sh](https://cursor.sh/)
-
----
-
-**Account**: trb65519 (AWS US-WEST-2)  
-**Built**: October 3, 2025  
-**Status**: ✅ Production Ready
-
-Built with ❄️ by the Snowflake community
