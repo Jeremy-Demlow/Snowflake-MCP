@@ -1,0 +1,25 @@
+{
+  "mcpServers": {
+    "snowflake-financial-services": {
+      "url": "https://<YOUR-ORG-ACCOUNT>.snowflakecomputing.com/api/v2/databases/snowflake_mcp_db/schemas/data/mcp-servers/financial_services_mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR-PAT-TOKEN>"
+      },
+      "metadata": {
+        "description": "Snowflake MCP Server for Financial Services Data",
+        "database": "snowflake_mcp_db",
+        "schema": "data",
+        "server_name": "financial_services_mcp",
+        "tools": [
+          "financial_analyst - Natural language SQL queries",
+          "support_tickets_search - Support ticket semantic search",
+          "customer_search - Customer data search",
+          "campaigns_search - Marketing campaign search",
+          "transactions_search - Transaction search and fraud detection",
+          "risk_assessments_search - Risk assessment search"
+        ]
+      }
+    }
+  }
+}
+

@@ -1,0 +1,452 @@
+---
+# ============================================================================
+# SEMANTIC MODEL FOR CORTEX ANALYST
+# Purpose: Define business logic and relationships for natural language queries
+# ============================================================================
+name: financial_services_semantic_model
+description: >
+  Comprehensive semantic model for financial services data including customers,
+  transactions, campaigns, support tickets, and risk assessments.
+
+tables:
+  # ==========================================================================
+  # DIMENSION: CUSTOMERS
+  # ==========================================================================
+  - name: dim_customers
+    description: Customer master data including demographics and financial profile
+    base_table:
+      database: snowflake_mcp_db
+      schema: data
+      table: dim_customers
+    dimensions:
+      - name: customer_id
+        synonyms: ["customer ID", "client ID", "account holder ID"]
+        description: Unique identifier for each customer
+        data_type: text
+        unique: true
+        
+      - name: full_name
+        synonyms: ["name", "customer name", "client name"]
+        description: Customer's full name
+        expr: "first_name || ' ' || last_name"
+        data_type: text
+        
+      - name: email
+        synonyms: ["email address", "contact email"]
+        description: Customer's email address
+        data_type: text
+        
+      - name: customer_segment
+        synonyms: ["segment", "customer type", "tier"]
+        description: Customer segmentation category
+        data_type: text
+        
+      - name: risk_profile
+        synonyms: ["risk level", "risk category"]
+        description: Customer's risk classification
+        data_type: text
+        
+      - name: region
+        synonyms: ["area", "territory", "location"]
+        description: Geographic region of customer
+        data_type: text
+        
+      - name: status
+        synonyms: ["account status", "customer status"]
+        description: Current status of the customer account
+        data_type: text
+        
+    measures:
+      - name: total_customers
+        synonyms: ["customer count", "number of customers"]
+        description: Total count of customers
+        expr: COUNT(DISTINCT customer_id)
+        data_type: number
+        
+      - name: avg_credit_score
+        synonyms: ["average credit score", "mean credit score"]
+        description: Average credit score across customers
+        expr: AVG(credit_score)
+        data_type: number
+        
+      - name: avg_annual_income
+        synonyms: ["average income", "mean annual income"]
+        description: Average annual income of customers
+        expr: AVG(annual_income)
+        data_type: number
+        
+      - name: total_lifetime_value
+        synonyms: ["total LTV", "aggregate customer value"]
+        description: Sum of all customer lifetime values
+        expr: SUM(lifetime_value)
+        data_type: number
+
+  # ==========================================================================
+  # FACT: TRANSACTIONS
+  # ==========================================================================
+  - name: fact_transactions
+    description: Transaction records including purchases, transfers, and payments
+    base_table:
+      database: snowflake_mcp_db
+      schema: data
+      table: fact_transactions
+    dimensions:
+      - name: transaction_id
+        synonyms: ["transaction ID", "txn ID"]
+        description: Unique identifier for each transaction
+        data_type: text
+        unique: true
+        
+      - name: transaction_type
+        synonyms: ["type", "txn type", "transaction category"]
+        description: Type of transaction (deposit, withdrawal, transfer, etc.)
+        data_type: text
+        
+      - name: merchant_name
+        synonyms: ["merchant", "vendor", "store"]
+        description: Name of the merchant or business
+        data_type: text
+        
+      - name: merchant_category
+        synonyms: ["category", "merchant type", "industry"]
+        description: Category of merchant or business
+        data_type: text
+        
+      - name: channel
+        synonyms: ["transaction channel", "method"]
+        description: Channel through which transaction was made
+        data_type: text
+        
+      - name: is_flagged
+        synonyms: ["flagged", "suspicious", "marked"]
+        description: Whether transaction was flagged for review
+        data_type: number
+        
+    time_dimensions:
+      - name: transaction_date
+        synonyms: ["date", "txn date", "when"]
+        description: Date and time of the transaction
+        data_type: timestamp
+        
+    measures:
+      - name: total_transactions
+        synonyms: ["transaction count", "number of transactions"]
+        description: Total count of transactions
+        expr: COUNT(DISTINCT transaction_id)
+        data_type: number
+        
+      - name: total_amount
+        synonyms: ["total value", "sum of transactions", "transaction volume"]
+        description: Total transaction amount
+        expr: SUM(amount)
+        data_type: number
+        
+      - name: avg_transaction_amount
+        synonyms: ["average transaction", "mean amount"]
+        description: Average transaction amount
+        expr: AVG(amount)
+        data_type: number
+        
+      - name: flagged_transactions
+        synonyms: ["suspicious count", "flagged count"]
+        description: Count of flagged transactions
+        expr: SUM(is_flagged)
+        data_type: number
+        
+      - name: avg_fraud_score
+        synonyms: ["average fraud score", "mean fraud score"]
+        description: Average fraud score across transactions
+        expr: AVG(fraud_score)
+        data_type: number
+
+  # ==========================================================================
+  # FACT: SUPPORT TICKETS
+  # ==========================================================================
+  - name: fact_support_tickets
+    description: Customer support interactions and service requests
+    base_table:
+      database: snowflake_mcp_db
+      schema: data
+      table: fact_support_tickets
+    dimensions:
+      - name: ticket_id
+        synonyms: ["ticket ID", "case ID", "support ID"]
+        description: Unique identifier for each support ticket
+        data_type: text
+        unique: true
+        
+      - name: category
+        synonyms: ["issue category", "ticket type"]
+        description: Main category of the support issue
+        data_type: text
+        
+      - name: subcategory
+        synonyms: ["subcategory", "issue subcategory"]
+        description: Detailed subcategory of the issue
+        data_type: text
+        
+      - name: priority
+        synonyms: ["priority level", "urgency"]
+        description: Priority level of the ticket
+        data_type: text
+        
+      - name: status
+        synonyms: ["ticket status", "case status"]
+        description: Current status of the ticket
+        data_type: text
+        
+      - name: channel
+        synonyms: ["contact channel", "communication method"]
+        description: Channel through which ticket was created
+        data_type: text
+        
+    time_dimensions:
+      - name: created_date
+        synonyms: ["creation date", "opened date", "when created"]
+        description: Date the ticket was created
+        data_type: date
+        
+      - name: resolution_date
+        synonyms: ["resolved date", "closed date"]
+        description: Date the ticket was resolved
+        data_type: date
+        
+    measures:
+      - name: total_tickets
+        synonyms: ["ticket count", "number of tickets"]
+        description: Total count of support tickets
+        expr: COUNT(DISTINCT ticket_id)
+        data_type: number
+        
+      - name: avg_resolution_time
+        synonyms: ["average resolution time", "mean time to resolve"]
+        description: Average time to resolve tickets in hours
+        expr: AVG(resolution_time_hours)
+        data_type: number
+        
+      - name: avg_satisfaction_score
+        synonyms: ["average satisfaction", "customer satisfaction score"]
+        description: Average customer satisfaction score
+        expr: AVG(satisfaction_score)
+        data_type: number
+        
+      - name: avg_first_response_time
+        synonyms: ["average first response", "mean response time"]
+        description: Average time to first response in minutes
+        expr: AVG(first_response_time_minutes)
+        data_type: number
+
+  # ==========================================================================
+  # DIMENSION: CAMPAIGNS
+  # ==========================================================================
+  - name: dim_campaigns
+    description: Marketing campaign master data and performance metrics
+    base_table:
+      database: snowflake_mcp_db
+      schema: data
+      table: dim_campaigns
+    dimensions:
+      - name: campaign_id
+        synonyms: ["campaign ID"]
+        description: Unique identifier for each campaign
+        data_type: text
+        unique: true
+        
+      - name: campaign_name
+        synonyms: ["name", "campaign title"]
+        description: Name of the marketing campaign
+        data_type: text
+        
+      - name: campaign_type
+        synonyms: ["type", "campaign category"]
+        description: Type of campaign (email, social, etc.)
+        data_type: text
+        
+      - name: objective
+        synonyms: ["goal", "campaign objective"]
+        description: Primary objective of the campaign
+        data_type: text
+        
+      - name: product_promoted
+        synonyms: ["product", "offering"]
+        description: Product or service being promoted
+        data_type: text
+        
+      - name: status
+        synonyms: ["campaign status"]
+        description: Current status of the campaign
+        data_type: text
+        
+    time_dimensions:
+      - name: start_date
+        synonyms: ["launch date", "start"]
+        description: Campaign start date
+        data_type: date
+        
+      - name: end_date
+        synonyms: ["completion date", "end"]
+        description: Campaign end date
+        data_type: date
+        
+    measures:
+      - name: total_campaigns
+        synonyms: ["campaign count", "number of campaigns"]
+        description: Total count of campaigns
+        expr: COUNT(DISTINCT campaign_id)
+        data_type: number
+        
+      - name: total_budget
+        synonyms: ["total campaign budget", "budget allocated"]
+        description: Total budget across campaigns
+        expr: SUM(budget)
+        data_type: number
+        
+      - name: total_spend
+        synonyms: ["actual spend", "total spent"]
+        description: Total actual spend across campaigns
+        expr: SUM(actual_spend)
+        data_type: number
+        
+      - name: total_revenue
+        synonyms: ["revenue generated", "total revenue"]
+        description: Total revenue generated from campaigns
+        expr: SUM(revenue_generated)
+        data_type: number
+        
+      - name: avg_roi
+        synonyms: ["average ROI", "return on investment"]
+        description: Average return on investment
+        expr: AVG(roi)
+        data_type: number
+        
+      - name: total_conversions
+        synonyms: ["conversion count", "total conversions"]
+        description: Total conversions across campaigns
+        expr: SUM(conversions)
+        data_type: number
+
+  # ==========================================================================
+  # FACT: RISK ASSESSMENTS
+  # ==========================================================================
+  - name: fact_risk_assessments
+    description: Customer risk assessment records and scores
+    base_table:
+      database: snowflake_mcp_db
+      schema: data
+      table: fact_risk_assessments
+    dimensions:
+      - name: assessment_id
+        synonyms: ["assessment ID", "evaluation ID"]
+        description: Unique identifier for each risk assessment
+        data_type: text
+        unique: true
+        
+      - name: overall_risk_rating
+        synonyms: ["risk rating", "risk level"]
+        description: Overall risk classification
+        data_type: text
+        
+      - name: review_required
+        synonyms: ["needs review", "flagged for review"]
+        description: Whether manual review is required
+        data_type: number
+        
+    time_dimensions:
+      - name: assessment_date
+        synonyms: ["evaluation date", "assessment date"]
+        description: Date of the risk assessment
+        data_type: date
+        
+    measures:
+      - name: total_assessments
+        synonyms: ["assessment count", "number of assessments"]
+        description: Total count of risk assessments
+        expr: COUNT(DISTINCT assessment_id)
+        data_type: number
+        
+      - name: avg_credit_risk_score
+        synonyms: ["average credit risk", "mean credit risk"]
+        description: Average credit risk score
+        expr: AVG(credit_risk_score)
+        data_type: number
+        
+      - name: avg_fraud_risk_score
+        synonyms: ["average fraud risk", "mean fraud risk"]
+        description: Average fraud risk score
+        expr: AVG(fraud_risk_score)
+        data_type: number
+        
+      - name: avg_aml_risk_score
+        synonyms: ["average AML risk", "mean AML score"]
+        description: Average anti-money laundering risk score
+        expr: AVG(aml_risk_score)
+        data_type: number
+        
+      - name: reviews_required
+        synonyms: ["count needing review", "manual review count"]
+        description: Count of assessments requiring manual review
+        expr: SUM(review_required)
+        data_type: number
+
+# ============================================================================
+# RELATIONSHIPS: Define how tables connect
+# ============================================================================
+relationships:
+  - name: customer_to_transactions
+    left_table: dim_customers
+    right_table: fact_transactions
+    join_type: inner
+    join_conditions:
+      - left_column: customer_id
+        right_column: customer_id
+        
+  - name: customer_to_support
+    left_table: dim_customers
+    right_table: fact_support_tickets
+    join_type: inner
+    join_conditions:
+      - left_column: customer_id
+        right_column: customer_id
+        
+  - name: customer_to_risk
+    left_table: dim_customers
+    right_table: fact_risk_assessments
+    join_type: inner
+    join_conditions:
+      - left_column: customer_id
+        right_column: customer_id
+
+# ============================================================================
+# VERIFIED QUERIES: Sample queries to validate the model
+# ============================================================================
+verified_queries:
+  - question: "What is the total transaction volume by customer segment?"
+    sql: |
+      SELECT 
+        c.customer_segment,
+        COUNT(DISTINCT t.transaction_id) as total_transactions,
+        SUM(t.amount) as total_amount
+      FROM dim_customers c
+      JOIN fact_transactions t ON c.customer_id = t.customer_id
+      GROUP BY c.customer_segment
+      
+  - question: "Show me the average satisfaction score by support ticket category"
+    sql: |
+      SELECT 
+        category,
+        AVG(satisfaction_score) as avg_satisfaction,
+        COUNT(DISTINCT ticket_id) as ticket_count
+      FROM fact_support_tickets
+      GROUP BY category
+      
+  - question: "What is the ROI for each marketing campaign?"
+    sql: |
+      SELECT 
+        campaign_name,
+        budget,
+        actual_spend,
+        revenue_generated,
+        roi
+      FROM dim_campaigns
+      ORDER BY roi DESC
+

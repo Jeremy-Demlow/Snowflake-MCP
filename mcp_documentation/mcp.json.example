@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "snowflake-docs": {
+      "url": "https://<ACCOUNT_NAME>.snowflakecomputing.com/api/v2/databases/MCP/schemas/MCP_SERVERS/mcp-servers/SNOWFLAKE_DOCS",
+      "headers": {
+        "Authorization": "Bearer <YOUR-PAT-TOKEN>"
+      },
+      "metadata": {
+        "description": "Snowflake Documentation MCP Server - provides accurate Snowflake syntax and function documentation to Cursor",
+        "database": "MCP",
+        "schema": "MCP_SERVERS",
+        "server_name": "SNOWFLAKE_DOCS",
+        "tools": [
+          "snowflake-docs - Search Snowflake documentation for syntax, functions, and best practices"
+        ]
+      }
+    }
+  }
+}
+
