@@ -3,6 +3,9 @@ project:
   output-dir: _docs
   resources:
     - "*.txt"
+  preview:
+    port: 3000
+    browser: false
   render:
     - "*.ipynb"
     - "*.md"
@@ -11,23 +14,32 @@ project:
     - "!mcp_ski_resort/"
     - "!.venv/"
 
-website:
-  title: "MCP Ski Resort"
-  navbar:
-    background: dark
-    search: true
-  sidebar:
-    style: floating
-
 format:
   html:
-    theme:
-      dark: slate
-      light: flatly
+    theme: cosmo
     css: styles.css
     toc: true
     code-tools: true
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
     highlight-style: arrow
+    grid:
+      sidebar-width: 180px
+      body-width: 1800px
+      margin-width: 150px
+      gutter-width: 1.0rem
+    keep-md: true
+  commonmark: default
+
+website:
+  twitter-card: true
+  open-graph: true
+  repo-actions: [issue]
+  navbar:
+    background: primary
+    search: true
+  sidebar:
+    style: floating
 
 metadata-files:
   - nbdev.yml

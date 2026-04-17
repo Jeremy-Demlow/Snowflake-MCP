@@ -1,20 +1,45 @@
-:root {
-  --dark-bg: #0f172a;
-  --dark-surface: #1e293b;
-  --dark-border: #334155;
-  --dark-text: #e2e8f0;
-  --dark-muted: #94a3b8;
-  --dark-accent: #60a5fa;
+.cell {
+  margin-bottom: 1rem;
 }
 
-pre {
-  border: 1px solid var(--dark-border);
-  border-radius: 8px;
+.cell > .sourceCode {
+  margin-bottom: 0;
 }
 
-.cell-output pre {
+.cell-output > pre {
+  margin-bottom: 0;
   max-height: 400px;
   overflow-y: auto;
+}
+
+.cell-output:not(.cell-output-markdown) > pre,
+.cell-output:not(.cell-output-markdown) > .sourceCode > pre,
+.cell-output-stdout > pre,
+.cell-output-markdown {
+  margin-left: 0.4rem;
+  padding-left: 0.4rem;
+  margin-top: 0;
+  background: none;
+  border-left: 2px solid lightsalmon;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.cell-output > .sourceCode {
+  border: none;
+}
+
+.cell-output > .sourceCode {
+  background: none;
+  margin-top: 0;
+}
+
+div.description {
+  padding-left: 2px;
+  padding-top: 5px;
+  font-style: italic;
+  font-size: 135%;
+  opacity: 70%;
 }
 
 table {

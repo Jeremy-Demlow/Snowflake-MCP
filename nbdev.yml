@@ -2,8 +2,8 @@ project:
   output-dir: _docs
 
 website:
-  title: "mcp-ski-resort"
-  site-url: "/"
+  title: "MCP Ski Resort"
+  site-url: "https://Jeremy-Demlow.github.io/Snowflake-MCP/"
   description: "Snowflake Managed MCP Server client library and demos for Alpine Mountain Ski Resort"
   repo-branch: main
-  repo-url: ""
+  repo-url: "https://github.com/Jeremy-Demlow/Snowflake-MCP"
