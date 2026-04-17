@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "ski-resort-mcp": {
+      "url": "https://<YOUR_ACCOUNT>.snowflakecomputing.com/api/v2/databases/AM_SKI_RESORT/schemas/MCP_SERVERS/mcp-servers/ski_resort_mcp",
+      "headers": {
+        "Authorization": "Bearer <YOUR_PAT_TOKEN>",
+        "X-Snowflake-Authorization-Token-Type": "PROGRAMMATIC_ACCESS_TOKEN"
+      }
+    }
+  }
+}

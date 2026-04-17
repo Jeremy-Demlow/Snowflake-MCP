@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-ski-resort"
+version = "0.1.0"
+description = "Snowflake Managed MCP Server client library and demos for Alpine Mountain Ski Resort"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Jeff Demlow"}]
+keywords = ["snowflake", "mcp", "cortex", "agent", "ski-resort"]
+dependencies = [
+    "requests>=2.31.0",
+    "pandas>=2.0.0",
+    "PyJWT>=2.8.0",
+    "cryptography>=41.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+async = ["httpx>=0.25.0"]
+dev = [
+    "ipykernel>=6.25.0",
+    "ipywidgets>=8.0.0",
+    "altair>=5.0.0",
+    "jupyter>=1.0.0",
+    "nbdev>=2.3.0",
+    "fastcore",
+    "httpx>=0.25.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["mcp_ski_resort"]
+
+[tool.setuptools.dynamic]
+version = {attr = "mcp_ski_resort.__version__"}
+
+[tool.nbdev]
+nbs_path = "."
+doc_path = "_docs"
+readme_nb = "index.ipynb"
+jupyter_hooks = true

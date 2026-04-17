@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: _docs
+  resources:
+    - "*.txt"
+
+website:
+  title: "MCP Ski Resort"
+  navbar:
+    background: dark
+    search: true
+  sidebar:
+    style: floating
+
+format:
+  html:
+    theme:
+      dark: slate
+      light: flatly
+    css: styles.css
+    toc: true
+    code-tools: true
+    highlight-style: arrow
+
+metadata-files:
+  - nbdev.yml
+  - sidebar.yml
