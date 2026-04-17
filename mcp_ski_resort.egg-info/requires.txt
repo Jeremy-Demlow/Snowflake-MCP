@@ -1,0 +1,17 @@
+requests>=2.31.0
+pandas>=2.0.0
+PyJWT>=2.8.0
+cryptography>=41.0.0
+python-dotenv>=1.0.0
+
+[async]
+httpx>=0.25.0
+
+[dev]
+ipykernel>=6.25.0
+ipywidgets>=8.0.0
+altair>=5.0.0
+jupyter>=1.0.0
+nbdev>=2.3.0
+fastcore
+httpx>=0.25.0
