@@ -3,6 +3,13 @@ project:
   output-dir: _docs
   resources:
     - "*.txt"
+  render:
+    - "*.ipynb"
+    - "*.md"
+    - "!old/"
+    - "!examples/"
+    - "!mcp_ski_resort/"
+    - "!.venv/"
 
 website:
   title: "MCP Ski Resort"

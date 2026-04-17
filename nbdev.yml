@@ -1,2 +1,9 @@
 project:
-  lib_path: mcp_ski_resort
+  output-dir: _docs
+
+website:
+  title: "mcp-ski-resort"
+  site-url: "/"
+  description: "Snowflake Managed MCP Server client library and demos for Alpine Mountain Ski Resort"
+  repo-branch: main
+  repo-url: ""

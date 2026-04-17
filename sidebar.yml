@@ -1,0 +1,14 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - 00_core.ipynb
+      - 01_async.ipynb
+      - 02_mcp_client.ipynb
+      - 03_agent_streaming.ipynb
+      - 04_mcp_client_demo.ipynb
+      - section: old
+        contents:
+          - old/03_agent_streaming.ipynb
+          - old/04_see_pattern.ipynb
+          - old/05_mcp_client_demo.ipynb

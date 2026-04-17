@@ -18,7 +18,7 @@ build/
 # nbdev / Quarto
 _docs/
 _proc/
-sidebar.yml
+# sidebar.yml — tracked (custom curated sidebar)
 .quarto/
 
 # Jupyter
