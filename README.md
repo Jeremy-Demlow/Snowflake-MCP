@@ -14,9 +14,8 @@ pip install -e ".[async]"
 
 ## Architecture
 
-This project uses [nbdev](https://nbdev.fast.ai/) for notebook-driven
-development. The notebooks are the source of truth for both the library
-code and documentation.
+The notebooks are the source of truth for both the library code and
+documentation.
 
     Snowflake-MCP/
     ├── 00_core.ipynb            # Library: JWT auth, SSE streaming, normalization, threads

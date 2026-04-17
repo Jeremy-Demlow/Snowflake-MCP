@@ -38,6 +38,9 @@ website:
   navbar:
     background: primary
     search: true
+    right:
+      - icon: github
+        href: https://github.com/Jeremy-Demlow/Snowflake-MCP
   sidebar:
     style: floating
 
